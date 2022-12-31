@@ -1,40 +1,78 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View, ScrollView, FlatList } from 'react-native';
+
+import GoalItems from './components/GoalItems';
 
 export default function App() {
-  const [count , setCount] = useState(0)
 
-  let title = 1;
-  const tap = () => {
-    
-    setCount(count + 1);
+  const [enteredGoalText, setEnteredGoalText] = useState('');
+  const [yearGoals, setYearGoals] = useState([]);
+  function goalInputHandler(enteredValues) {
+    setEnteredGoalText(enteredValues);
+  }
+
+  function addGoalHandler() {
+    setYearGoals(currentYearGoal => [...currentYearGoal, {
+      text: enteredGoalText, id: Math.random().toString()
+    },
+    ]);
+
   }
   return (
-    <View style={styles.container}>
-      <View>
-        <Text style={
-          {
-            color: 'red',
-            borderWidth: 2, 
-            borderColor: 'black',
-            padding: 15,
-            }}
-            
-            >{count}</Text>
+    <View style={styles.appContainer}>
+      <View style={styles.inputContainer}>
+        <TextInput style={styles.TextInput} placeholder='Your Goals For 2023...' onChangeText={goalInputHandler}></TextInput>
+        <Button title="Add Goals" onPress={addGoalHandler}></Button>
       </View>
-      <Text>Open up App.js to start working on your app!</Text>
-      <Button title="tap me" onPress={tap}></Button>
-      <StatusBar style="auto" />
+
+
+      <View style={styles.goalContainer}>
+
+        <FlatList data={yearGoals} renderItem={(itemData) => {
+          return <GoalItems text={itemData.item.text} />
+        }}
+          keyExtractor={(item, index) => {
+            return item.id
+          }}
+          alwaysBounceVertical={false}
+
+        />
+
+      </View>
+
     </View>
+
+
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+  appContainer: {
+    paddingTop: 50,
+    paddingHorizontal: 12,
+    flex: 1
+
   },
+  inputContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingBottom: 50
+
+  },
+  TextInput: {
+    width: "70%",
+    borderWidth: 1,
+    borderColor: '#6c6c6c',
+    padding: 8,
+    marginRight: 9
+
+  },
+  goalContainer: {
+    flex: 5
+  },
+
+
 });
+
